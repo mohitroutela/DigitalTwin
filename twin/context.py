@@ -1,12 +1,23 @@
 from pypdf import PdfReader
+from pathlib import Path
 
-reader = PdfReader("linkedin.pdf")
+linkedin_file = Path("linkedin.txt")
+if linkedin_file.exists():
+    linkedin = linkedin_file.read_text(encoding="utf-8")
+else:
+    reader = PdfReader("linkedin.pdf")
 
-linkedin = ""
-for page in reader.pages:
-    text = page.extract_text()
-    if text:
-        linkedin += text
+    linkedin = ""
+    for page in reader.pages:
+        text = page.extract_text()
+        if text:
+            linkedin += text
+
+    # Cache extracted linkedin text for future runs
+    try:
+        linkedin_file.write_text(linkedin, encoding="utf-8")
+    except Exception:
+        pass
 
 with open("summary.txt", "r", encoding="utf-8") as f:
     summary = f.read()
